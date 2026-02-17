@@ -68,8 +68,6 @@ function randomScore(isWin) {
     }
 }
 
-const DOUBLES_POINTS_TO_RANKPAIR = buildDoublesPointsLookup();
-
 /** Infer opponent ranks from a doubles points value (works for ALL values) */
 function inferOppRanksFromPoints(points) {
     // Build all rank pairs (1..12) and see which ones round-average to `points`
