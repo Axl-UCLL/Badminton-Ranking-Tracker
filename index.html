@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon.png">
+  <title>Badminton Ranking Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo"><img href="images/favicon.png"></div>
+      <div>
+        <div class="title">Badminton Ranking Tracker</div>
+        <div class="subtitle">Local app · no database · BV-style points</div>
+      </div>
+    </div>
+
+    <nav class="tabs" role="tablist" aria-label="Disciplines">
+      <button class="tab is-active" data-tab="doubles" role="tab" aria-selected="true">Doubles</button>
+      <button class="tab" data-tab="singles" role="tab" aria-selected="false">Singles</button>
+      <button class="tab" data-tab="mix" role="tab" aria-selected="false">Mix</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section id="page-doubles" class="page is-active">
+      <div class="panel">
+        <div class="panel__header">
+          <div>
+            <h1>Doubles</h1>
+            <p class="muted">Matches are saved in <code>localStorage</code>. Points are computed from opponent ranks.</p>
+          </div>
+          <div class="actions">
+            <button id="btnAddMatch" class="btn btn-primary">+ Add match</button>
+            <button id="btnReset" class="btn btn-ghost" title="Clears local storage and re-seeds baseline">Reset</button>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat__label">BV average (stijgen)</div>
+            <div class="stat__value" id="avgValue">–</div>
+            <div class="stat__sub">Based on last 20 matches · min divisor 7</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat__label">Points needed for next rank</div>
+            <div class="stat__value" id="neededValue">–</div>
+            <div class="stat__sub" id="neededSub">Target: –</div>
+            <div class="progress">
+              <div class="progress__bar" id="progressBar" style="width:0%;"></div>
+            </div>
+          </div>
+
+          <div class="stat">
+            <div class="stat__label">Matches stored</div>
+            <div class="stat__value" id="matchCount">–</div>
+            <div class="stat__sub">Using last 20 by date</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__header">
+          <h2>Match history</h2>
+          <div class="muted small">Newest first</div>
+        </div>
+
+        <div class="tablewrap">
+          <table class="table" id="matchesTable">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Score</th>
+                <th>Points</th>
+                <th class="th-actions">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="matchesTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-singles" class="page">
+      <div class="panel">
+        <h1>Singles</h1>
+        <p class="muted">Coming soon.</p>
+      </div>
+    </section>
+
+    <section id="page-mix" class="page">
+      <div class="panel">
+        <h1>Mix</h1>
+        <p class="muted">Coming soon.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal__overlay" data-close="true"></div>
+    <div class="modal__card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal__head">
+        <h3 id="modalTitle">Add doubles match</h3>
+        <button class="iconbtn" id="btnCloseModal" aria-label="Close">✕</button>
+      </div>
+
+      <form id="matchForm" class="form">
+        <div class="grid">
+          <label>
+            <span>Date</span>
+            <input type="date" id="mDate" required />
+          </label>
+
+          <label>
+            <span>My rank (1–12)</span>
+            <input type="number" id="myClass" min="1" max="12" required value="5" />
+          </label>
+
+          <label>
+            <span>Partner rank (1–12)</span>
+            <input type="number" id="partnerClass" min="1" max="12" required value="5" />
+          </label>
+
+          <label>
+            <span>Opponent 1 rank (1–12)</span>
+            <input type="number" id="opp1Class" min="1" max="12" required value="6" />
+          </label>
+
+          <label>
+            <span>Opponent 2 rank (1–12)</span>
+            <input type="number" id="opp2Class" min="1" max="12" required value="7" />
+          </label>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sets">
+          <div class="sets__head">
+            <div>
+              <div class="label">Score (best of 3)</div>
+              <div class="muted small">Enter 2 sets (straight win) or 3 sets.</div>
+            </div>
+            <button type="button" class="btn btn-ghost" id="btnAutoThird">Toggle 3rd set</button>
+          </div>
+
+          <div class="setrow">
+            <div class="settitle">Set 1</div>
+            <div class="setinputs">
+              <input type="number" min="0" max="30" id="s1a" placeholder="Us" required />
+              <span class="sep">–</span>
+              <input type="number" min="0" max="30" id="s1b" placeholder="Them" required />
+            </div>
+          </div>
+
+          <div class="setrow">
+            <div class="settitle">Set 2</div>
+            <div class="setinputs">
+              <input type="number" min="0" max="30" id="s2a" placeholder="Us" required />
+              <span class="sep">–</span>
+              <input type="number" min="0" max="30" id="s2b" placeholder="Them" required />
+            </div>
+          </div>
+
+          <div class="setrow" id="set3Row" style="display:none;">
+            <div class="settitle">Set 3</div>
+            <div class="setinputs">
+              <input type="number" min="0" max="30" id="s3a" placeholder="Us" />
+              <span class="sep">–</span>
+              <input type="number" min="0" max="30" id="s3b" placeholder="Them" />
+            </div>
+          </div>
+
+          <div class="preview">
+            <div class="preview__item">
+              <div class="muted small">Computed result</div>
+              <div class="preview__value" id="computedResult">–</div>
+            </div>
+            <div class="preview__item">
+              <div class="muted small">Computed points</div>
+              <div class="preview__value" id="computedPoints">–</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal__foot">
+          <button type="button" class="btn btn-ghost" data-close="true">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save match</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
