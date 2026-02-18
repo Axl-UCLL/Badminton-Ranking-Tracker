@@ -255,7 +255,11 @@ function render() {
       <td><strong>${formatScore(m.score)}</strong></td>
       <td>${pointsBadge}</td>
       <td>
-        <button class="iconbtn" data-del="${idx}">Delete</button>
+        <button class="iconbtn iconbtn--trash" type="button" data-del="${idx}" aria-label="Delete match">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 7h2v9h-2v-9zm4 0h2v9h-2v-9zM7 10h2v9H7v-9zM6 8h12l-1 14H7L6 8z"></path>
+            </svg>
+        </button>
       </td>
     `;
 
