@@ -341,7 +341,7 @@ els.btnAddMatch.addEventListener("click", () => {
 
 els.btnReset.addEventListener("click", () => {
     localStorage.removeItem(STORAGE_KEY);
-    seedBaselineIfEmpty();
+    saveMatches([]);
     render();
 });
 
